@@ -97,24 +97,6 @@ void SelectionSort(int* a, int len)
 	}
 }
 
-int max(int* a, int len)
-{
-	if (a != nullptr)
-	{
-		int maxi = a[0];
-		int index = 0;
-		for (int i = 0; i < len; ++i)
-		{
-			if (a[i] > maxi)
-			{
-				maxi = a[i];
-				index = i;
-			}
-		}
-		return index;
-	}
-}
-
 void CountSort(int* a, int len)
 {
 	int lenc = 10;
