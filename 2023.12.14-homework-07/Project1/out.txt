@@ -1,0 +1,2 @@
+Number of words: 14
+Length of the longest sentence: 7

@@ -4,10 +4,17 @@ void hanoi(int n, int from, int to);
 
 int main(int argc, char* argv[])
 {
+	int from = 1;
+	int to = 0;
 	int n = 0;
 	std::cin >> n;
-	hanoi(n, 1, 3);
-	std::cout << std::endl;
+
+	for (int i = n; i > 0; --i)
+	{
+		to = (i % 2 == 0 ? 3 : 2);
+		hanoi(i, from, to);
+		from = to;
+	}
 	return EXIT_SUCCESS;
 }
 
@@ -19,16 +26,7 @@ void hanoi(int n, int from, int to)
 	}
 
 	int res = 6 - from - to;
-
-	if (from + to == 4)
-	{
-		hanoi(n, from, res);
-		hanoi(n, res, to);
-	}
-	else
-	{
-		hanoi(n - 1, from, res);
-		printf("%d %d %d\n", n, from, to);
-		hanoi(n - 1, res, to);
-	}
+	hanoi(n - 1, from, res);
+	printf("%d %d %d\n", n, from, to);
+	hanoi(n - 1, res, to);
 }
