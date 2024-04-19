@@ -46,6 +46,29 @@ private:
 };
 
 int main(int argc, char* argv[]) {
+	LinkedList list;
+	std::cout << list << std::endl;
+	list.PushHead(1);
+	std::cout << list << std::endl;
+	list.PushTail(3);
+	std::cout << list << std::endl;
+	list.Insert(1, 2);
+	std::cout << list << std::endl;
+	list.Insert(3, 4);
+	std::cout << list << std::endl << std::endl;
+	std::cout << list << std::endl;
+	std::cout << list.PopHead() << " ";
+	std::cout << list.Extract(1) << " ";
+	std::cout << list.PopTail() << " ";
+	std::cout << list.Extract(0) << std::endl;
+	std::cout << list << std::endl << std::endl;
+
+	list.PushHead(3); list.PushHead(4); list.PushHead(1); list.PushHead(2);
+	list.PushHead(7); list.PushHead(5); list.PushHead(8); list.PushHead(6);
+	std::cout << list << std::endl;
+	list.sort();
+	std::cout << list << std::endl;
+	return EXIT_SUCCESS;
 }
 
 int LinkedList::Length() {
@@ -102,7 +125,8 @@ void LinkedList::swap(int ia, int ib) {
 		return;
 	}
 	if (ia > ib) {
-		std::swap(ia, ib);
+		swap(ib, ia);
+		return;
 	}
 	Node* nodeA = ExtractNode(ia);
 	Node* nodeB = ExtractNode(ib - 1);
@@ -146,23 +170,13 @@ void LinkedList::InsertNode(int index, Node* node) {
 		head = node;
 		return;
 	}
-	if (index == Length()) {
-		Node* tmp = head;
-		while (tmp->next != nullptr)
-		{
-			tmp = tmp->next;
-		}
-		tmp->next = node;
-		return;
+	Node* tmp = head;
+	for (int i = 0; i < index - 1 && tmp->next != nullptr; ++i)
+	{
+		tmp = tmp->next;
 	}
-	else if (IndexValid(index)) {
-		Node* tmp = head;
-		for (int i = 0; i < index - 1 && tmp->next != nullptr; ++i) {
-			tmp = tmp->next;
-		}
-		node->next = tmp->next;
-		tmp->next = node;
-	}
+	node->next = tmp->next;
+	tmp->next = node;
 }
 
 Node* LinkedList::ExtractNode(int index) {
@@ -179,7 +193,7 @@ Node* LinkedList::ExtractNode(int index) {
 		tmp = tmp->next;
 	}
 	Node* res = tmp->next;
-	tmp->next = res->next;
+	tmp->next = tmp->next->next;
 	return res;
 }
 
