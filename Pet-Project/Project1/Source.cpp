@@ -13,10 +13,10 @@ int main() {
     Matrix a(n);
     Matrix b(n, 1);
 
-    std::cout << "\nPlease, enter the coefficients of the matrix A (row by row):\n";
+    std::cout << "\nPlease, enter the coefficients of the matrix A:\n";
     a.initMatrix();
 
-    std::cout << "\nPlease, enter the vector of free terms (B):\n";
+    std::cout << "\nPlease, enter the coefficients of the vector B:\n";
     b.initMatrix();
 
     Matrix a_inv = a.inverseMatrix();

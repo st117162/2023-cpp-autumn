@@ -40,14 +40,6 @@ double Matrix::getValue(int row, int col) {
 	return _data[row][col];
 }
 
-double Matrix::determinant() {
-	if (_rows != _cols) {
-		std::cerr << "Error: Matrix is not square" << std::endl;
-		exit(1);
-	}
-	return det(_data, _rows);
-}
-
 Matrix Matrix::inverseMatrix() {
 	if (_rows != _cols) {
 		std::cerr << "Error: Matrix is not square" << std::endl;
@@ -172,7 +164,7 @@ double** Matrix::inverse(double** data, int n) {
 	return inv;
 }
 
-void showSystem(Matrix matr, Matrix vect, int n) {
+void writeSystem(Matrix matr, Matrix vect, int n) {
 	for (int i = 0; i < n; ++i) {
 		for (int j = 0; j < n - 1; ++j) {
 			std::cout << "(" << matr.getValue(i, j) << ") * " << "x" << j + 1 << " + ";
@@ -181,7 +173,7 @@ void showSystem(Matrix matr, Matrix vect, int n) {
 	}
 }
 
-void showSolution(Matrix sol, int n) {
+void writeSolution(Matrix sol, int n) {
 	std::cout << "X = (";
 	for (int i = 0; i < n - 1; ++i) {
 		std::cout << sol.getValue(i, 0) << ", ";
@@ -193,7 +185,12 @@ void writeLatexSystem(std::ofstream& file, Matrix matr, Matrix vect, int n) {
 	file << "\\[\n\\begin{cases}\n";
 	for (int i = 0; i < n; ++i) {
 		for (int j = 0; j < n - 1; ++j) {
-			file << matr.getValue(i, j) << "x_{" << j + 1 << "} + ";
+			if (std::abs(matr.getValue(i, j)) < 1e-10) {
+				file << 0 << "x_{" << j + 1 << "} + ";
+			}
+			else {
+				file << matr.getValue(i, j) << "x_{" << j + 1 << "} + ";
+			}
 		}
 		file << matr.getValue(i, n - 1) << "x_{" << n << "} = " << vect.getValue(i, 0) << " \\\\\n";
 	}
@@ -204,7 +201,12 @@ void writeLatexMatrix(std::ofstream& file, std::string name, Matrix matr, int _r
 	file << "\\[\n" << name << " = \\begin{pmatrix}\n";
 	for (int i = 0; i < _rows; ++i) {
 		for (int j = 0; j < _cols; ++j) {
-			file << matr.getValue(i, j);
+			if (std::abs(matr.getValue(i, j)) < 1e-10) {
+				file << 0;
+			}
+			else {
+				file << matr.getValue(i, j);
+			}
 			if (j < _cols - 1) {
 				file << " & ";
 			}
