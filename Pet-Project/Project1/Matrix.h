@@ -12,6 +12,9 @@ public:
 	~Matrix();
 	void initMatrix();
 	double getValue(int row, int col);
+	Matrix algDopMatrix(int row, int col);
+	double algDopValue(int row, int col);
+	double determinant();
 	Matrix inverseMatrix();
 	friend std::ostream& operator<<(std::ostream& stream, const Matrix& matrix);
 	Matrix operator*(const Matrix& other);
@@ -33,4 +36,6 @@ void writeSystem(Matrix matr, Matrix vect, int n);
 void writeSolution(Matrix sol, int n);
 void writeLatexSystem(std::ofstream& file, Matrix matr, Matrix vect, int n);
 void writeLatexMatrix(std::ofstream& file, std::string name, Matrix matr, int _rows, int _cols);
+void writeLatexInverseMatrix(std::ofstream& file, std::string name, Matrix matr, Matrix inv, int n);
+void writeLatexAlgDop(std::ofstream& file, Matrix matr, int i, int j, int n);
 void writeLatexFile(std::ofstream& file, Matrix matr, Matrix vect, Matrix inv, Matrix sol, int n);

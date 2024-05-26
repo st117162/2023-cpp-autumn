@@ -1,4 +1,5 @@
 #include "Matrix.h"
+#include<cmath>
 
 Matrix::Matrix() : _rows(0), _cols(0), _data(nullptr) {}
 
@@ -38,6 +39,27 @@ void Matrix::initMatrix() {
 
 double Matrix::getValue(int row, int col) {
 	return _data[row][col];
+}
+
+Matrix Matrix::algDopMatrix(int row, int col)
+{
+	Matrix res(_rows - 1);
+	res._data = minor(_data, _rows, row, col);
+	return res;
+}
+
+double Matrix::algDopValue(int row, int col)
+{
+	return cofactor(_data, _rows, row, col);
+}
+
+double Matrix::determinant() {
+	if (_rows != _cols) {
+		std::cerr << "Error: Matrix is not square" << std::endl;
+		exit(1);
+	}
+
+	return det(_data, _rows);
 }
 
 Matrix Matrix::inverseMatrix() {
@@ -86,12 +108,7 @@ Matrix Matrix::operator*(double coef) {
 std::ostream& operator<<(std::ostream& stream, const Matrix& matrix) {
 	for (int i = 0; i < matrix._rows; ++i) {
 		for (int j = 0; j < matrix._cols; ++j) {
-			if (std::abs(matrix._data[i][j]) < 1e-10) {
-				stream << 0 << " ";
-			}
-			else {
-				stream << matrix._data[i][j] << " ";
-			}
+			stream << round(matrix._data[i][j] * 100000) / 100000 << " ";
 		}
 		stream << "\n";
 	}
@@ -176,23 +193,18 @@ void writeSystem(Matrix matr, Matrix vect, int n) {
 void writeSolution(Matrix sol, int n) {
 	std::cout << "X = (";
 	for (int i = 0; i < n - 1; ++i) {
-		std::cout << sol.getValue(i, 0) << ", ";
+		std::cout << round(sol.getValue(i, 0) * 100000) / 100000 << ", ";
 	}
-	std::cout << sol.getValue(n - 1, 0) << ")" << std::endl;
+	std::cout << round(sol.getValue(n - 1, 0) * 100000) / 100000 << ")" << std::endl;
 }
 
 void writeLatexSystem(std::ofstream& file, Matrix matr, Matrix vect, int n) {
 	file << "\\[\n\\begin{cases}\n";
 	for (int i = 0; i < n; ++i) {
 		for (int j = 0; j < n - 1; ++j) {
-			if (std::abs(matr.getValue(i, j)) < 1e-10) {
-				file << 0 << "x_{" << j + 1 << "} + ";
-			}
-			else {
-				file << matr.getValue(i, j) << "x_{" << j + 1 << "} + ";
-			}
+			file << round(matr.getValue(i, j) * 100000) / 100000 << "x_{" << j + 1 << "} + ";
 		}
-		file << matr.getValue(i, n - 1) << "x_{" << n << "} = " << vect.getValue(i, 0) << " \\\\\n";
+		file << round(matr.getValue(i, n - 1) * 100000) / 100000 << "x_{" << n << "} = " << round(vect.getValue(i, 0) * 10000.0) / 10000.0 << " \\\\\n";
 	}
 	file << "\\end{cases}\n\\]\n";
 }
@@ -201,12 +213,7 @@ void writeLatexMatrix(std::ofstream& file, std::string name, Matrix matr, int _r
 	file << "\\[\n" << name << " = \\begin{pmatrix}\n";
 	for (int i = 0; i < _rows; ++i) {
 		for (int j = 0; j < _cols; ++j) {
-			if (std::abs(matr.getValue(i, j)) < 1e-10) {
-				file << 0;
-			}
-			else {
-				file << matr.getValue(i, j);
-			}
+			file << round(matr.getValue(i, j) * 100000) / 100000;
 			if (j < _cols - 1) {
 				file << " & ";
 			}
@@ -218,6 +225,58 @@ void writeLatexMatrix(std::ofstream& file, std::string name, Matrix matr, int _r
 	file << "\n\\end{pmatrix}\n\\]\n\n";
 }
 
+void writeLatexInverseMatrix(std::ofstream& file, std::string name, Matrix matr, Matrix inv, int n) {
+	file << "\\[\n" << name << " = \\frac{" << 1 << "}{" << matr.determinant() << "}\\begin{pmatrix}\n";
+	for (int i = 0; i < n; ++i) {
+		for (int j = 0; j < n; ++j) {
+			file << round(matr.algDopValue(j, i) * 100000) / 100000;
+			if (j < n - 1) {
+				file << " & ";
+			}
+		}
+		if (i < n - 1) {
+			file << " \\\\\n";
+		}
+	}
+
+	file << "\n\\end{pmatrix}\n = \\begin{pmatrix}\n";
+	for (int i = 0; i < n; ++i) {
+		for (int j = 0; j < n; ++j) {
+			file << round(inv.getValue(i, j) * 100000) / 100000;
+			if (j < n - 1) {
+				file << " & ";
+			}
+		}
+		if (i < n - 1) {
+			file << " \\\\\n";
+		}
+	}
+	file << "\n\\end{pmatrix}\n\\]\n\n";
+}
+
+void writeLatexAlgDop(std::ofstream& file, Matrix matr, int row, int col, int n) {
+	Matrix algDopMatr = matr.algDopMatrix(row, col);
+	double algDopValue = matr.algDopValue(row, col); 
+
+	file << "\\[\n"
+		<< "A_{" << row + 1 << col + 1 << "} = (-1)^{" << row + 1 << "+" << col + 1 << "} \\begin{vmatrix}\n";
+
+	for (int i = 0; i < n; ++i) {
+		for (int j = 0; j < n; ++j) {
+			file << round(algDopMatr.getValue(i, j) * 100000) / 100000;
+			if (j < n - 1) {
+				file << " & ";
+			}
+		}
+		if (i < n - 1) {
+			file << " \\\\\n";
+		}
+	}
+	file << "\n\\end{vmatrix}\n"
+		<< " = " << round(algDopValue * 100000) / 100000
+		<< "\n\\]\n\n";
+}
+
 void writeLatexFile(std::ofstream& file, Matrix matr, Matrix vect, Matrix inv, Matrix sol, int n) {
 	file << "\\documentclass{article}\n";
 	file << "\\usepackage{amsmath}\n";
@@ -227,7 +286,12 @@ void writeLatexFile(std::ofstream& file, Matrix matr, Matrix vect, Matrix inv, M
 	writeLatexSystem(file, matr, vect, n);
 	writeLatexMatrix(file, "A", matr, n, n);
 	writeLatexMatrix(file, "B", vect, n, 1);
-	writeLatexMatrix(file, "A^{-1}", inv, n, n);
+	for (int i = 0; i < n; ++i) {
+		for (int j = 0; j < n; ++j) {
+			writeLatexAlgDop(file, matr, i, j, n - 1);
+		}
+	}
+	writeLatexInverseMatrix(file, "A^{-1}", matr, inv, n);
 	writeLatexMatrix(file, "X", sol, n, 1);
 	file << "\\end{document}\n";
 

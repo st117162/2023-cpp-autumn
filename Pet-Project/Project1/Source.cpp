@@ -1,4 +1,5 @@
 #include "Matrix.h"
+#include <cstdlib>
 
 int main() {
     std::cout << "---------------------------------------------------\n";
@@ -26,9 +27,19 @@ int main() {
     std::ofstream latexFile(filename);
 
     writeLatexFile(latexFile, a, b, a.inverseMatrix(), x, n);
+    std::cout << "\nYou can check the solution in " << filename << "\n\n\n";
 
-    std::cout << "\nYou can check the solution in " << filename << "\n";
-    std::cout << "Goodbye!\n";
+    std::string command = "pdflatex " + filename;
+    int result = system(command.c_str());
+
+    if (result == 0) {
+        std::cout << "\n\nPDF file generated successfully.\n";
+    }
+    else {
+        std::cout << "\n\nError occurred while generating PDF file.\n";
+    }
+
+    std::cout << "\n\nGoodbye!\n";
 
     return EXIT_SUCCESS;
 }
